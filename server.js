@@ -133,7 +133,7 @@ function addRole(){
       },
       {
           name: 'salary',
-          message: 'What is the salary of this particular role?'
+          message: 'What is the weekly salary of this particular role?'
       },
       {
           name: 'department',

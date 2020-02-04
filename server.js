@@ -87,7 +87,7 @@ function addDepartment(){
 function addDepartmentFunctionality(ans){
     connection.query(`INSERT INTO department(name) VALUES (?)`,[ans],(err, dep)=>{
         if(err) throw err;
-        console.log(dep);
+        console.log(`Department was added successfully`);
     });
 }
 
@@ -105,36 +105,24 @@ function addEmployee(){
       {
         name: 'empRole',
         message: 'What is employees role within the company?'
-      }, 
-      {
-        name: 'empSalary',
-        message: 'What is this employees salary?'
       },
       {
-          name: 'empDept',
-          message: 'What is the employees department'
-      },
-      {
-        name: 'isLeader', 
-        message: 'Is he a manager [Y/N]'
+        name: 'manager', 
+        message: 'Enter manager id'
       }
     ])
     .then(answer => {
-        const firstName = answer.first.toString();
-        const lastName = answer.last.toString();
-        const employeeRole = answer.empRole.toString();
-        const employeeSalary = parseFloat(answer.empSalary);
-        const employeeDept = answer.empDept.toString();
-        const isManager = answer.isLeader.toString();
+      const fName = answer.first;
+      const lName = answer.last;
+      const job = answer.empRole; 
+      const manager = answer.manager;
 
-        connection.query('SELECT * FROM employees, roles, department', (err, table)=> {
-            const jtable = [...table];
-            for(let i = 0; i < jtable.length; i++){
-
-            }
-        })
-      
-    })
+      connection.query(`INSERT INTO employees(firstname, lastname, roles_idRoles, manager_id) VALUES(?,?,(SELECT idRoles FROM roles WHERE title = ?), ?)`, [fName, lName, job, manager], (err, val)=>{
+        if(err) throw err;
+        console.log(`new employee added to the employee table`);
+      });
+    });
+    
 }
 function addRole(){
     inquirer
@@ -184,13 +172,33 @@ function viewDepartments(){
     connection.query(`SELECT * FROM department`, (err, deps)=>{
         if(err) throw err;
         console.log(deps);
-    })
+        inquirer.prompt([
+          {
+            name: 'action',
+            message: 'Go back?(type Yes and then Enter)',
+          }
+        ]).then(answer => {
+          if(answer.action){
+            runSearch();
+          }
+        });
+    });
 }
 
 function viewEmployees(){
     connection.query(`SELECT * FROM employees`, (err, emp)=> {
         if(err) throw err;
         console.log(emp);
+        inquirer.prompt([
+          {
+            name: 'action',
+            message: 'Go back?(type Yes and then Enter)',
+          }
+        ]).then(answer => {
+          if(answer.action){
+            runSearch();
+          }
+        });
     });
 }
 
@@ -198,5 +206,15 @@ function viewRoles(){
     connection.query(`SELECT * FROM roles`, (err, roles)=> {
         if(err) throw err;
         console.log(roles);
+        inquirer.prompt([
+          {
+            name: 'action',
+            message: 'Go back?(type Yes and then Enter)',
+          }
+        ]).then(answer => {
+          if(answer.action){
+            runSearch();
+          }
+        });
     });
 }
